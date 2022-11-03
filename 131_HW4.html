@@ -219,7 +219,7 @@ titanic_folds</code></pre>
 ##  9 &lt;split [561/62]&gt; Fold09
 ## 10 &lt;split [561/62]&gt; Fold10</code></pre>
 <p>Question 3.</p>
-<p>In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. K-fold cross validation refers to subdiving the data into k groups for the use in cross-validation. The model in question is fitted to 9 of the 10 groups (or k-1 of the k) groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 (or k) available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help improve the model’s estimation of the MSE. If we were to use the whole training set, the resampling method would be bootstrap.</p>
+<p>In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. K-fold cross validation refers to subdividing the data into k groups for the use in cross-validation. The model in question is fitted to 9 of the 10 groups (or k-1 of the k) groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 (or k) available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help improve the model’s estimation of the MSE. If we were to use the whole training set, the resampling method would be validation set.</p>
 <p>Question 4.</p>
 <pre class="r"><code># implement same recipe as HW3
 titanic_recipe &lt;- recipe(survived ~ pclass + sex + age + sib_sp + parch + fare, data = titanic_train) %&gt;%
@@ -255,6 +255,14 @@ qda_wkflow &lt;- workflow() %&gt;%
   add_recipe(titanic_recipe)</code></pre>
 <p>30 models will be fitted in total.</p>
 <p>Question 5.</p>
+<pre class="r"><code># fit logistic regression model
+#log_fit &lt;- fit(log_wkflow, titanic_folds)
+
+# fit linear discriminant analysis workflow
+#lda_fit &lt;- fit(lda_wkflow, titanic_folds)
+
+# fit quadratic discriminant analysis workflow
+#qda_fit &lt;- fit(qda_wkflow, titanic_folds)</code></pre>
 
 
 
