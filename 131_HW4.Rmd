@@ -16,6 +16,8 @@ library(tidyverse)
 library(ISLR)
 library(ISLR2)
 library(tidymodels)
+library(MASS)
+library(parsnip)
 tidymodels_prefer()
 
 titanic <- read_csv("/Users/zackreardon/Downloads/homework-3/data/titanic.csv")
@@ -50,3 +52,43 @@ titanic_folds
 Question 3.
 
 In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. The model in question is fitted to 9 of the 10 groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help improve the model's estimation of the MSE. If we were to use the whole training set, the resampling method would be bootstrap.
+
+Question 4.
+
+```{r}
+# implement same recipe as HW3
+titanic_recipe <- recipe(survived ~ pclass + sex + age + sib_sp + parch + fare, data = titanic_train) %>%
+  step_impute_linear(age, impute_with = imp_vars(all_predictors())) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_interact(~ starts_with("sex"):fare) %>%
+  step_interact(~ age:fare)
+```
+
+```{r}
+# set up logistic regression workflow
+log_reg <- logistic_reg() %>% 
+  set_engine("glm") %>% 
+  set_mode("classification")
+
+log_wkflow <- workflow() %>% 
+  add_model(log_reg) %>% 
+  add_recipe(titanic_recipe)
+
+# set up linear discriminant analysis workflow
+lda_mod <- discrim_linear() %>% 
+  set_mode("classification") %>% 
+  set_engine("MASS")
+
+lda_wkflow <- workflow() %>% 
+  add_model(lda_mod) %>% 
+  add_recipe(titanic_recipe)
+
+# set up quadratic discriminant analysis workflow
+qda_mod <- discrim_quad() %>% 
+  set_mode("classification") %>% 
+  set_engine("MASS")
+
+qda_wkflow <- workflow() %>% 
+  add_model(qda_mod) %>% 
+  add_recipe(titanic_recipe)
+```

@@ -179,6 +179,8 @@ pre code {
 library(ISLR)
 library(ISLR2)
 library(tidymodels)
+library(MASS)
+library(parsnip)
 tidymodels_prefer()
 
 titanic &lt;- read_csv(&quot;/Users/zackreardon/Downloads/homework-3/data/titanic.csv&quot;)
@@ -218,6 +220,39 @@ titanic_folds</code></pre>
 ## 10 &lt;split [561/62]&gt; Fold10</code></pre>
 <p>Question 3.</p>
 <p>In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. The model in question is fitted to 9 of the 10 groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help improve the model’s estimation of the MSE. If we were to use the whole training set, the resampling method would be bootstrap.</p>
+<p>Question 4.</p>
+<pre class="r"><code># implement same recipe as HW3
+titanic_recipe &lt;- recipe(survived ~ pclass + sex + age + sib_sp + parch + fare, data = titanic_train) %&gt;%
+  step_impute_linear(age, impute_with = imp_vars(all_predictors())) %&gt;%
+  step_dummy(all_nominal_predictors()) %&gt;%
+  step_interact(~ starts_with(&quot;sex&quot;):fare) %&gt;%
+  step_interact(~ age:fare)</code></pre>
+<pre class="r"><code># set up logistic regression workflow
+log_reg &lt;- logistic_reg() %&gt;% 
+  set_engine(&quot;glm&quot;) %&gt;% 
+  set_mode(&quot;classification&quot;)
+
+log_wkflow &lt;- workflow() %&gt;% 
+  add_model(log_reg) %&gt;% 
+  add_recipe(titanic_recipe)
+
+# set up linear discriminant analysis workflow
+lda_mod &lt;- discrim_linear() %&gt;% 
+  set_mode(&quot;classification&quot;) %&gt;% 
+  set_engine(&quot;MASS&quot;)
+
+lda_wkflow &lt;- workflow() %&gt;% 
+  add_model(lda_mod) %&gt;% 
+  add_recipe(titanic_recipe)
+
+# set up quadratic discriminant analysis workflow
+qda_mod &lt;- discrim_quad() %&gt;% 
+  set_mode(&quot;classification&quot;) %&gt;% 
+  set_engine(&quot;MASS&quot;)
+
+qda_wkflow &lt;- workflow() %&gt;% 
+  add_model(qda_mod) %&gt;% 
+  add_recipe(titanic_recipe)</code></pre>
 
 
 
