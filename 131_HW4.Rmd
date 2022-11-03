@@ -6,6 +6,47 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache.extra = rand_seed)
 ```
 
+```{r, message=FALSE}
+library(tidyverse)
+library(ISLR)
+library(ISLR2)
+library(tidymodels)
+tidymodels_prefer()
+
+titanic <- read_csv("/Users/zackreardon/Downloads/homework-3/data/titanic.csv")
+
+# converting to factors
+titanic$survived <- as.factor(titanic$survived)
+titanic$pclass <- as.factor(titanic$pclass)
+```
+
+Question 1.
+
+```{r}
+set.seed(100)
+
+titanic_split <- initial_split(titanic, prop = 0.70, strata = survived)
+
+titanic_train <- training(titanic_split)
+titanic_test <- testing(titanic_split)
+
+# verifying correct number of observations
+dim(titanic_train) 
+dim(titanic_test)
+```
+
+Question 2.
+
+```{r}
+titanic_folds <- vfold_cv(titanic_train, v=10)
+titanic_folds
+```
+
+Question 3.
+
+In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. The model in question is fitted to 9 of the 10 groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help improve the model's estimation of the MSE. If we were to use the whole training set, the resampling method would be bootstrap.

@@ -175,7 +175,49 @@ pre code {
 </div>
 
 
+<pre class="r"><code>library(tidyverse)
+library(ISLR)
+library(ISLR2)
+library(tidymodels)
+tidymodels_prefer()
 
+titanic &lt;- read_csv(&quot;/Users/zackreardon/Downloads/homework-3/data/titanic.csv&quot;)
+
+# converting to factors
+titanic$survived &lt;- as.factor(titanic$survived)
+titanic$pclass &lt;- as.factor(titanic$pclass)</code></pre>
+<p>Question 1.</p>
+<pre class="r"><code>set.seed(100)
+
+titanic_split &lt;- initial_split(titanic, prop = 0.70, strata = survived)
+
+titanic_train &lt;- training(titanic_split)
+titanic_test &lt;- testing(titanic_split)
+
+# verifying correct number of observations
+dim(titanic_train) </code></pre>
+<pre><code>## [1] 623  12</code></pre>
+<pre class="r"><code>dim(titanic_test)</code></pre>
+<pre><code>## [1] 268  12</code></pre>
+<p>Question 2.</p>
+<pre class="r"><code>titanic_folds &lt;- vfold_cv(titanic_train, v=10)
+titanic_folds</code></pre>
+<pre><code>## #  10-fold cross-validation 
+## # A tibble: 10 × 2
+##    splits           id    
+##    &lt;list&gt;           &lt;chr&gt; 
+##  1 &lt;split [560/63]&gt; Fold01
+##  2 &lt;split [560/63]&gt; Fold02
+##  3 &lt;split [560/63]&gt; Fold03
+##  4 &lt;split [561/62]&gt; Fold04
+##  5 &lt;split [561/62]&gt; Fold05
+##  6 &lt;split [561/62]&gt; Fold06
+##  7 &lt;split [561/62]&gt; Fold07
+##  8 &lt;split [561/62]&gt; Fold08
+##  9 &lt;split [561/62]&gt; Fold09
+## 10 &lt;split [561/62]&gt; Fold10</code></pre>
+<p>Question 3.</p>
+<p>In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. The model in question is fitted to 9 of the 10 groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help improve the model’s estimation of the MSE. If we were to use the whole training set, the resampling method would be bootstrap.</p>
 
 
 
