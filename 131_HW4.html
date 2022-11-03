@@ -292,6 +292,32 @@ collect_metrics(log_fit)</code></pre>
 ##   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
 ## 1 accuracy binary     0.759    10  0.0138 Preprocessor1_Model1
 ## 2 roc_auc  binary     0.833    10  0.0132 Preprocessor1_Model1</code></pre>
+<p>The logistic regression model performed the best because it had the highest mean accuracy and its standard errors were not significantly larger than that of the quadratic discriminant analysis, which had the smallest. By having the greatest mean accuracy and sufficiently small standard errors compared to its alternatives, the logistic regression model appears to have performed the best.</p>
+<p>Question 7.</p>
+<pre class="r"><code>new_log_fit &lt;- fit(log_wkflow, titanic_train)</code></pre>
+<p>Question 8.</p>
+<pre class="r"><code>predict &lt;- predict(new_log_fit, new_data=titanic_test, type=&quot;prob&quot;)
+
+accuracy &lt;- augment(new_log_fit, new_data = titanic_test) %&gt;%
+  accuracy(truth = survived, estimate = .pred_class)
+
+bind_cols(predict, accuracy)</code></pre>
+<pre><code>## # A tibble: 268 × 5
+##    .pred_No .pred_Yes .metric  .estimator .estimate
+##       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+##  1   0.0782    0.922  accuracy binary         0.840
+##  2   0.904     0.0955 accuracy binary         0.840
+##  3   0.118     0.882  accuracy binary         0.840
+##  4   0.205     0.795  accuracy binary         0.840
+##  5   0.263     0.737  accuracy binary         0.840
+##  6   0.747     0.253  accuracy binary         0.840
+##  7   0.546     0.454  accuracy binary         0.840
+##  8   0.272     0.728  accuracy binary         0.840
+##  9   0.673     0.327  accuracy binary         0.840
+## 10   0.388     0.612  accuracy binary         0.840
+## # … with 258 more rows
+## # ℹ Use `print(n = ...)` to see more rows</code></pre>
+<p>The model’s testing accuracy was 0.84 while its average training accuracy across folds was 0.804. Strangely, the testing accuracy appears to be higher than the training accuracy.</p>
 
 
 

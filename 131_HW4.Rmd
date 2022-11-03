@@ -124,3 +124,24 @@ collect_metrics(log_fit)
 collect_metrics(lda_fit)
 collect_metrics(qda_fit)
 ```
+
+The logistic regression model performed the best because it had the highest mean accuracy and its standard errors were not significantly larger than that of the quadratic discriminant analysis, which had the smallest. By having the greatest mean accuracy and sufficiently small standard errors compared to its alternatives, the logistic regression model appears to have performed the best.
+
+Question 7.
+
+```{r}
+new_log_fit <- fit(log_wkflow, titanic_train)
+```
+
+Question 8.
+
+```{r}
+predict <- predict(new_log_fit, new_data=titanic_test, type="prob")
+
+accuracy <- augment(new_log_fit, new_data = titanic_test) %>%
+  accuracy(truth = survived, estimate = .pred_class)
+
+bind_cols(predict, accuracy)
+```
+
+The model's testing accuracy was 0.84 while its average training accuracy across folds was 0.804. Strangely, the testing accuracy appears to be higher than the training accuracy.
