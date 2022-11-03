@@ -1,0 +1,11 @@
+---
+title: "131_HW4"
+author: "Zack Reardon"
+date: "11/3/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
