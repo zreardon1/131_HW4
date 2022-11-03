@@ -92,3 +92,6 @@ qda_wkflow <- workflow() %>%
   add_model(qda_mod) %>% 
   add_recipe(titanic_recipe)
 ```
+30 models will be fitted in total.
+
+Question 5.
