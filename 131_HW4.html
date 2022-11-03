@@ -181,6 +181,7 @@ library(ISLR2)
 library(tidymodels)
 library(MASS)
 library(parsnip)
+library(discrim)
 tidymodels_prefer()
 
 titanic &lt;- read_csv(&quot;/Users/zackreardon/Downloads/homework-3/data/titanic.csv&quot;)
@@ -219,7 +220,7 @@ titanic_folds</code></pre>
 ##  9 &lt;split [561/62]&gt; Fold09
 ## 10 &lt;split [561/62]&gt; Fold10</code></pre>
 <p>Question 3.</p>
-<p>In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. K-fold cross validation refers to subdividing the data into k groups for the use in cross-validation. The model in question is fitted to 9 of the 10 groups (or k-1 of the k) groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 (or k) available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help improve the model’s estimation of the MSE. If we were to use the whole training set, the resampling method would be validation set.</p>
+<p>In Question 2 we are cross-validating the titanic training data by subdividing it into 10 groups. K-fold cross validation refers to subdividing the data into k groups for the use in cross-validation. The model in question is fitted to 9 of the 10 groups (or k-1 of the k) groups and the MSE of the left out group is calculated. This is repeated to calculate the MSEs of each of the 10 (or k) available groups to be left out. By applying the learned model to the left out groups, an estimate of the test MSE can be obtained. This is useful since it can help in determining which models has a better estimation of the MSE. If we were to use the whole training set, the resampling method would be validation set.</p>
 <p>Question 4.</p>
 <pre class="r"><code># implement same recipe as HW3
 titanic_recipe &lt;- recipe(survived ~ pclass + sex + age + sib_sp + parch + fare, data = titanic_train) %&gt;%
@@ -256,13 +257,41 @@ qda_wkflow &lt;- workflow() %&gt;%
 <p>30 models will be fitted in total.</p>
 <p>Question 5.</p>
 <pre class="r"><code># fit logistic regression model
-#log_fit &lt;- fit(log_wkflow, titanic_folds)
+log_fit &lt;- fit_resamples(log_wkflow, titanic_folds)
 
 # fit linear discriminant analysis workflow
-#lda_fit &lt;- fit(lda_wkflow, titanic_folds)
+lda_fit &lt;- fit_resamples(lda_wkflow, titanic_folds)
 
 # fit quadratic discriminant analysis workflow
-#qda_fit &lt;- fit(qda_wkflow, titanic_folds)</code></pre>
+qda_fit &lt;- fit_resamples(qda_wkflow, titanic_folds)
+
+save(log_fit, file=&quot;log_results.rda&quot;)
+save(lda_fit, file=&quot;lda_results.rda&quot;)
+save(qda_fit, file=&quot;qda_results.rda&quot;)</code></pre>
+<p>Question 6.</p>
+<pre class="r"><code>load(&quot;log_results.rda&quot;)
+load(&quot;lda_results.rda&quot;)
+load(&quot;qda_results.rda&quot;)
+
+# find mean and standard errors of the performance accuracy
+collect_metrics(log_fit)</code></pre>
+<pre><code>## # A tibble: 2 × 6
+##   .metric  .estimator  mean     n std_err .config             
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+## 1 accuracy binary     0.804    10  0.0160 Preprocessor1_Model1
+## 2 roc_auc  binary     0.835    10  0.0134 Preprocessor1_Model1</code></pre>
+<pre class="r"><code>collect_metrics(lda_fit)</code></pre>
+<pre><code>## # A tibble: 2 × 6
+##   .metric  .estimator  mean     n std_err .config             
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+## 1 accuracy binary     0.788    10  0.0195 Preprocessor1_Model1
+## 2 roc_auc  binary     0.836    10  0.0135 Preprocessor1_Model1</code></pre>
+<pre class="r"><code>collect_metrics(qda_fit)</code></pre>
+<pre><code>## # A tibble: 2 × 6
+##   .metric  .estimator  mean     n std_err .config             
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+## 1 accuracy binary     0.759    10  0.0138 Preprocessor1_Model1
+## 2 roc_auc  binary     0.833    10  0.0132 Preprocessor1_Model1</code></pre>
 
 
 
